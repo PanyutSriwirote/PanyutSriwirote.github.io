@@ -9,11 +9,12 @@ $(function() {
         output.text("ไพธอนพร้อมใช้งาน!");
         return interpreter;
     }
-    const interpreter_promise = load_interpreter();
+    const promised_interpreter = load_interpreter();
     $("#run").click(async function() {
-        const interpreter = await interpreter_promise;
+        output.text("กำลังรัน...");
+        const interpreter = await promised_interpreter;
         try {
-            interpreter.runPython(code.val());
+            await interpreter.runPythonAsync(code.val());
             output.text(interpreter.runPython("sys.stdout.getvalue()"));
             interpreter.runPython("sys.stdout.close();sys.stdout = io.StringIO()");
         } catch (err) {
