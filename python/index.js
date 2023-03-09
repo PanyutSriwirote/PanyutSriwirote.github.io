@@ -5,7 +5,7 @@ $(function() {
     async function load_interpreter() {
         output.text("กำลังเตรียมระบบไพธอน...");
         const interpreter = await loadPyodide();
-        interpreter.runPython("import sys;import io;sys.stdout = io.StringIO()");
+        interpreter.runPython("import sys, io;sys.stdout = io.StringIO()");
         output.text("ไพธอนพร้อมใช้งาน!");
         return interpreter;
     }
@@ -31,6 +31,10 @@ $(function() {
         const value = code.val();
         const start = this.selectionStart;
         const end = this.selectionEnd;
+        function get_last_line() {
+            const first_half = value.substring(0, start);
+            return first_half.substring(first_half.lastIndexOf('\n') + 1);
+        }
         switch (key) {
             case "Tab":
                 e.preventDefault();
@@ -58,7 +62,7 @@ $(function() {
                     code.val(value.substring(0, start - 1) + value.substring(end + 1));
                     this.selectionStart = this.selectionEnd = start - 1;
                 } else {
-                    const last_line = value.substring(0, start).split('\n').pop();
+                    const last_line = get_last_line();
                     if (/^ +$/.test(last_line)) {
                         e.preventDefault();
                         let num_delete = last_line % 4;
@@ -70,7 +74,7 @@ $(function() {
                 break;
             case "Enter":
                 e.preventDefault();
-                const last_line = value.substring(0, start).split('\n').pop();
+                const last_line = get_last_line();
                 let indent_level = Math.floor(last_line.match(/ */)[0].length / 4);
                 if (start == end && value[start - 1] == ':') {
                     indent_level++;
