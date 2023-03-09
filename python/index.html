@@ -10,6 +10,8 @@
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
             crossorigin="anonymous"
         ></script>
+        <!-- code editor -->
+        <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.3/src-min-noconflict/ace.min.js"></script>
         <!-- python interpreter -->
         <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
         <!-- my things -->
@@ -20,7 +22,7 @@
         <button id="run">รัน</button>
         <table style="height: 90vh;">
             <td style="width: 50vw;">
-                <textarea id="code"></textarea>
+                <div id="editor"></div>
             </td>
             <td style="width: 50vw;">
                 <pre id="output"></pre>
