@@ -26,11 +26,15 @@ $(function() {
         '[': ']',
         '{': '}'
     };
+    const history = []
+    let state;
+    let last_change = new Date().getTime();
     code.keydown(function(e) {
         const key = e.key;
         const value = code.val();
         const start = this.selectionStart;
         const end = this.selectionEnd;
+        state = {"text": value, "start": start, "end": end};
         function get_last_line() {
             const first_half = value.substring(0, start);
             return first_half.substring(first_half.lastIndexOf('\n') + 1);
@@ -40,6 +44,7 @@ $(function() {
                 e.preventDefault();
                 code.val(value.substring(0, start) + "    " + value.substring(end));
                 this.selectionStart = this.selectionEnd = start + 4;
+                code.trigger("input");
                 break;
             case '(':
             case '[':
@@ -47,6 +52,7 @@ $(function() {
                 e.preventDefault();
                 code.val(value.substring(0, start) + key + auto_complete[key] + value.substring(end));
                 this.selectionStart = this.selectionEnd = start + 1;
+                code.trigger("input");
                 break;
             case ')':
             case ']':
@@ -61,6 +67,7 @@ $(function() {
                     e.preventDefault();
                     code.val(value.substring(0, start - 1) + value.substring(end + 1));
                     this.selectionStart = this.selectionEnd = start - 1;
+                    code.trigger("input");
                 } else {
                     const last_line = get_last_line();
                     if (/^ +$/.test(last_line)) {
@@ -69,6 +76,7 @@ $(function() {
                         if (num_delete == 0) {num_delete = 4;}
                         code.val(value.substring(0, start - num_delete) + value.substring(end));
                         this.selectionStart = this.selectionEnd = start - num_delete;
+                        code.trigger("input");
                     }
                 }
                 break;
@@ -81,7 +89,26 @@ $(function() {
                 }
                 code.val(value.substring(0, start) + '\n' + "    ".repeat(indent_level) + value.substring(end));
                 this.selectionStart = this.selectionEnd = start + (4 * indent_level) + 1;
+                code.trigger("input");
                 break;
+            case 'z':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    const last_state = history.pop();
+                    code.val(last_state.text);
+                    this.selectionStart = last_state.start;
+                    this.selectionEnd = last_state.end;
+                }
+                break;
+        }
+    }).on("input", function() {
+        const now = new Date().getTime();
+        if (now - last_change > 1000) {
+            history.push(state);
+            last_change = now;
+            if (history.length > 20) {
+                history.shift();
+            }
         }
     });
 });
