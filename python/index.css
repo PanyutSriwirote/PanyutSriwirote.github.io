@@ -8,6 +8,7 @@
     color: white;
     background-color: black;
     height: 100%;
+    width: 50vw;
     overflow-y: scroll;
     padding-left: 10px;
     white-space: pre-wrap;
